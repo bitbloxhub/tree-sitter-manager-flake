@@ -7,17 +7,17 @@ This flake packages `tree-sitter-manager.nvim` with Nix-built parsers, so gramma
 Add this project as a flake input.
 
 The plugin is available as `inputs.tree-sitter-manager-flake.packages.${pkgs.stdenv.hostPlatform.system}.default` and has two ways of adding grammars:
-- `withAllGrammars`: Installs all grammars.
-  (`inputs'` is shorthand originally from flake-parts, pre-selects per-system outputs like `packages`)
-  Like this:
+- `withAllGrammars`: Installs all grammars.  
+  (`inputs'` is shorthand originally from flake-parts, pre-selects per-system outputs like `packages`)  
+  Like this:  
   ```nix
   {
     programs.neovim.plugins = [ inputs'.tree-sitter-manager-flake.packages.default.withAllGrammars ];
   }
   ```
 - `withGrammars`: Installs only selected grammars.
-  Takes a function that receives `grammars` (attrset of available grammars, keyed by name) and returns list of selected grammars.
-  Like this:
+  Takes a function that receives `grammars` (attrset of available grammars, keyed by name) and returns list of selected grammars.  
+  Like this:  
   ```nix
   {
     programs.neovim.plugins = [
