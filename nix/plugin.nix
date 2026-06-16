@@ -10,6 +10,15 @@
       ...
     }:
     {
+      make-shells.default = {
+        packages = [
+          # Updater stuff
+          pkgs.nix-prefetch-github
+          pkgs.ast-grep
+          pkgs.jq
+        ];
+      };
+
       packages.tree-sitter-manager-nvim-src = pkgs.fetchFromGitHub {
         owner = "romus204";
         repo = "tree-sitter-manager.nvim";

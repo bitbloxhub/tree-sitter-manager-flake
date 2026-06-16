@@ -11,7 +11,9 @@
     {
       make-shells.default = {
         packages = [
+          # Updater stuff
           pkgs.nix-prefetch-git
+          pkgs.neovim
         ];
       };
 
