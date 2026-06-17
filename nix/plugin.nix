@@ -35,7 +35,8 @@
         passthru = {
           withGrammars =
             grammarsFn:
-            pkgs.runCommand "tree-sitter-manager-nvim-with-grammars"
+            # Use same name for compatibility with lze-type plugin loading
+            pkgs.runCommand "tree-sitter-manager-nvim"
               {
                 passthru = {
                   grammars = self'.packages.tree-sitter-manager-grammars.grammars;
