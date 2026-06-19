@@ -22,8 +22,8 @@
       packages.tree-sitter-manager-nvim-src = pkgs.fetchFromGitHub {
         owner = "romus204";
         repo = "tree-sitter-manager.nvim";
-        rev = "ff0c04f418c610540148cb5a29a5960251f9a223";
-        hash = "sha256-SCblz2qZ49nhhn6l0fDEmL0GL3jJIS5NUotcOghBudY=";
+        rev = "ae305699da5e97b6cffdd5cc6f6045b1b0bd26ea";
+        hash = "sha256-SqaDN7nJhanpDgpD7DGectI0uv1sHrYdAPmVr4LXK40=";
       };
 
       packages.tree-sitter-manager-nvim = pkgs.vimUtils.buildVimPlugin {
