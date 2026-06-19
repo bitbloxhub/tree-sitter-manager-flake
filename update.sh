@@ -13,8 +13,9 @@ cleanup() {
 trap cleanup EXIT
 
 NEW_REV="$(git ls-remote "https://github.com/$OWNER/$REPO.git" HEAD | cut -f1)"
-nix-prefetch-github "$OWNER" "$REPO" --rev "$NEW_REV" > "$PREFETCH_JSON"
-NEW_HASH="$(jq -r '.hash // .sha256 // empty' "$PREFETCH_JSON")"
+nix-prefetch-github --meta "$OWNER" "$REPO" --rev "$NEW_REV" > "$PREFETCH_JSON"
+NEW_HASH="$(jq -r '.src.hash // .src.sha256 // empty' "$PREFETCH_JSON")"
+NEW_VERSION="0-unstable-$(jq -r '.meta.commitDate' "$PREFETCH_JSON")"
 
 cat > "$RULE" <<EOF
 id: update-tree-sitter-manager-nvim-rev
@@ -68,6 +69,26 @@ rule:
               stopBy: end
         stopBy: end
 fix: hash = "$NEW_HASH";
+---
+id: update-tree-sitter-manager-nvim-version
+language: Nix
+rule:
+  all:
+    - pattern:
+        context: |
+          { version = \$OLD_VERSION; }
+        selector: binding
+    - inside:
+        all:
+          - pattern: pkgs.vimUtils.buildVimPlugin \$ARG
+          - has:
+              pattern:
+                context: |
+                  { pname = "tree-sitter-manager-nvim"; }
+                selector: binding
+              stopBy: end
+        stopBy: end
+fix: version = "$NEW_VERSION";
 EOF
 
 # Preview

@@ -28,7 +28,7 @@
 
       packages.tree-sitter-manager-nvim = pkgs.vimUtils.buildVimPlugin {
         pname = "tree-sitter-manager-nvim";
-        version = "0-unstable-2026-06-16";
+        version = "0-unstable-2026-06-18";
 
         src = self'.packages.tree-sitter-manager-nvim-src;
 
