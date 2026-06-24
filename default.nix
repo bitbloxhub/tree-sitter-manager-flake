@@ -1,18 +1,17 @@
 {
-  system ? builtins.currentSystem,
-  overrides ? [ ],
+  pkgs ? import <nixpkgs> { },
 }:
 let
-  polyfillSrc = builtins.fetchTarball {
-    url = "https://github.com/bitbloxhub/flake-ultra-polyfill/archive/0730ed1f80b00cdac4cd3c88416845bf470681c0.tar.gz";
-    sha256 = "sha256-GTewO3D2TC14lXqLKvrqiAS401DaXQiKMqbNfPZCc0k=";
+  packages = rec {
+    tree-sitter-manager-nvim-src = pkgs.callPackage ./nix/tree-sitter-manager-nvim-src.pkg.nix { };
+    tree-sitter-manager-grammars = pkgs.callPackage ./nix/tree-sitter-manager-grammars.pkg.nix { };
+    tree-sitter-manager-nvim = pkgs.callPackage ./nix/tree-sitter-manager-nvim.pkg.nix {
+      self' = {
+        inherit packages;
+      };
+    };
+    default = tree-sitter-manager-nvim;
+    inherit (tree-sitter-manager-nvim) withAllGrammars;
   };
-  polyfill = import polyfillSrc;
-  fetched = polyfill.fetchFlakeInputs {
-    root = ./.;
-    lockFile = ./flake.lock;
-    inherit overrides;
-  };
-  flake = polyfill.callFlake fetched;
 in
-flake.packages.${system}
+packages

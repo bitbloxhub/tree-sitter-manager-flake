@@ -3,12 +3,14 @@ set -euo pipefail
 
 OWNER='romus204'
 REPO='tree-sitter-manager.nvim'
-FILE='nix/plugin.nix'
-RULE="$(mktemp)"
+SRC_FILE='nix/tree-sitter-manager-nvim-src.pkg.nix'
+PLUGIN_FILE='nix/tree-sitter-manager-nvim.pkg.nix'
+RULE_REV_HASH="$(mktemp)"
+RULE_VERSION="$(mktemp)"
 PREFETCH_JSON="$(mktemp)"
 
 cleanup() {
-	rm -f "$RULE" "$PREFETCH_JSON"
+	rm -f "$RULE_REV_HASH" "$RULE_VERSION" "$PREFETCH_JSON"
 }
 trap cleanup EXIT
 
@@ -17,7 +19,7 @@ nix-prefetch-github --meta "$OWNER" "$REPO" --rev "$NEW_REV" > "$PREFETCH_JSON"
 NEW_HASH="$(jq -r '.src.hash // .src.sha256 // empty' "$PREFETCH_JSON")"
 NEW_VERSION="0-unstable-$(jq -r '.meta.commitDate' "$PREFETCH_JSON")"
 
-cat > "$RULE" <<EOF
+cat > "$RULE_REV_HASH" <<EOF
 id: update-tree-sitter-manager-nvim-rev
 language: Nix
 rule:
@@ -28,7 +30,7 @@ rule:
         selector: binding
     - inside:
         all:
-          - pattern: pkgs.fetchFromGitHub \$ARG
+          - pattern: fetchFromGitHub \$ARG
           - has:
               pattern:
                 context: |
@@ -54,7 +56,7 @@ rule:
         selector: binding
     - inside:
         all:
-          - pattern: pkgs.fetchFromGitHub \$ARG
+          - pattern: fetchFromGitHub \$ARG
           - has:
               pattern:
                 context: |
@@ -69,7 +71,9 @@ rule:
               stopBy: end
         stopBy: end
 fix: hash = "$NEW_HASH";
----
+EOF
+
+cat > "$RULE_VERSION" <<EOF
 id: update-tree-sitter-manager-nvim-version
 language: Nix
 rule:
@@ -80,7 +84,7 @@ rule:
         selector: binding
     - inside:
         all:
-          - pattern: pkgs.vimUtils.buildVimPlugin \$ARG
+          - pattern: vimUtils.buildVimPlugin \$ARG
           - has:
               pattern:
                 context: |
@@ -92,9 +96,11 @@ fix: version = "$NEW_VERSION";
 EOF
 
 # Preview
-ast-grep scan -r "$RULE" "$FILE"
+ast-grep scan -r "$RULE_REV_HASH" "$SRC_FILE"
+ast-grep scan -r "$RULE_VERSION" "$PLUGIN_FILE"
 
 # Apply
-ast-grep scan -r "$RULE" -U "$FILE"
+ast-grep scan -r "$RULE_REV_HASH" -U "$SRC_FILE"
+ast-grep scan -r "$RULE_VERSION" -U "$PLUGIN_FILE"
 
 nvim --headless -u NONE -n -l update-lockfile.lua

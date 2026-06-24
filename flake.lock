@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "callpackage-tree": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782343342,
+        "narHash": "sha256-/4DCl94MewfBJLs0Eij/mlfsS9+kucWPadVzeM+gCDc=",
+        "owner": "bitbloxhub",
+        "repo": "callpackage-tree",
+        "rev": "e11027b483881fc4984478a01dfb99577bb31c03",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bitbloxhub",
+        "repo": "callpackage-tree",
+        "type": "github"
+      }
+    },
     "flake-file": {
       "locked": {
         "lastModified": 1781217157,
@@ -106,6 +122,7 @@
     },
     "root": {
       "inputs": {
+        "callpackage-tree": "callpackage-tree",
         "flake-file": "flake-file",
         "flake-parts": "flake-parts",
         "flint": "flint",

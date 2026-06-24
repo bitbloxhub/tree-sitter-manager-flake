@@ -9,7 +9,9 @@
       ''
         inputs:
         inputs.flake-parts.lib.mkFlake { inherit inputs; } (
-          (inputs.import-tree.filterNot (inputs.nixpkgs.lib.hasSuffix "npins/default.nix")) ./nix
+          ((inputs.import-tree.filterNot (inputs.nixpkgs.lib.hasSuffix "npins/default.nix")).filterNot (
+            inputs.nixpkgs.lib.hasSuffix ".pkg.nix"
+          )) ./nix
         )
       '';
     inputs = {
@@ -19,6 +21,10 @@
         inputs.nixpkgs-lib.follows = "nixpkgs";
       };
       nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+      callpackage-tree = {
+        url = "github:bitbloxhub/callpackage-tree";
+        flake = false;
+      };
     };
   };
 
@@ -32,5 +38,8 @@
   imports = [
     inputs.flake-file.flakeModules.default
     inputs.flake-file.flakeModules.import-tree
+    (import inputs.callpackage-tree {
+      root = ../nix;
+    })
   ];
 }

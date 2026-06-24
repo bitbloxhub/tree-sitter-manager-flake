@@ -6,7 +6,7 @@ This flake packages `tree-sitter-manager.nvim` with Nix-built parsers, so gramma
 
 Add this project as a flake input.
 
-The plugin is available as `inputs.tree-sitter-manager-flake.packages.${pkgs.stdenv.hostPlatform.system}.default` and has two ways of adding grammars:
+The plugin is available as `inputs.tree-sitter-manager-flake.packages.${pkgs.stdenv.hostPlatform.system}.default` and exposes `withAllGrammars` on that package:
 - `withAllGrammars`: Installs all grammars.  
   (`inputs'` is shorthand originally from flake-parts, pre-selects per-system outputs like `packages`)  
   Like this:  
@@ -33,27 +33,18 @@ See [upstream docs](https://github.com/romus204/tree-sitter-manager.nvim?tab=rea
 
 ## Installation (non-flake)
 
-This project now has a `default.nix` powered by [`flake-ultra-polyfill`](https://github.com/bitbloxhub/flake-ultra-polyfill/)! Add this repo using your preferred input pinner and import this project like this to reuse your pinned `sources.nixpkgs` for `nixpkgs`:
+Import the repo's `default.nix` package set with your pinned `pkgs`:
 ```nix
 let
-  tree-sitter-manager = import sources.tree-sitter-manager {
-    system = pkgs.stdenv.hostPlatform.system;
-    overrides = [
-      {
-        path = [ "nixpkgs" ];
-        value = {
-          sourceInfo.outPath = sources.nixpkgs;
-        };
-      }
-    ];
+  tree-sitter-manager = import sources.tree-sitter-manager-flake {
+    inherit pkgs;
   };
 in
 {
   programs.neovim.plugins = [
-    (tree-sitter-manager.default.withGrammars (grammars: [
-      grammars.nix
-      grammars.lua
-    ]))
+    tree-sitter-manager.withAllGrammars
   ];
 }
 ```
+
+The non-flake package set is built with manual `pkgs.callPackage` entries from `default.nix`.
